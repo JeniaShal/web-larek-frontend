@@ -4,7 +4,7 @@ import { IAppApi, ICard, IOrder, TOrderSuccess } from "../types/index"
 export class AppApi extends Api implements IAppApi {
   protected cdn: string; 
 
-  constructor(cdn: string, baseUrl: string, options?: RequestInit) {
+  constructor(cdn: string, baseUrl: string, options: RequestInit={}) {
     super(baseUrl, options);
     this.cdn = cdn;
   }
@@ -16,8 +16,8 @@ export class AppApi extends Api implements IAppApi {
   }
 
   getCardById(id: string): Promise<ICard> {
-    return this.get('/product/' + id).then((product: ICard) => {
-      return {...product, image: this.cdn + product.image}
+    return this.get('/product/' + id).then((card: ICard) => {
+      return {...card, image: this.cdn + card.image}
     })
   }
 
@@ -26,4 +26,5 @@ export class AppApi extends Api implements IAppApi {
       return success
     })
   }
+  
 }  
