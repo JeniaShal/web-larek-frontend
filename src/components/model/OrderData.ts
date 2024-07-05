@@ -1,5 +1,5 @@
-import { IOrder, TPaymentMethod
-} from '../../types/index'
+import { IOrder, TPaymentMethod, TOrderInfo} from '../../types/index'
+import { IEvents } from '../base/events';
 
 
 export class OrderData implements IOrder {
@@ -9,36 +9,35 @@ export class OrderData implements IOrder {
   protected _email: string;
   protected _total: number;
   protected _items: string[];
-  
-  constructor() {
-  }
+  protected order: IOrder; 
+  events: IEvents;
 
-  set paymentType(type: TPaymentMethod) {      //метод оплаты
+  set paymentType(type: TPaymentMethod) {      //записывает данные в метод оплаты
     this._paymentType = type;
   }
   
-  set email(value: string) {                  //email покупателя
+  set email(value: string) {                  //записывает данные в email покупателя
     this._email = value;
   }
 
-  set address(value: string){                 //адрес покупателя
+  set address(value: string){                 //записывает данные в адрес покупателя
     this._address = value;
   }
 
-  set telephone(value: string){               //номер телефона
+  set telephone(value: string){               //записывает данные в номер телефона
     this._telephone = value;
   }
 
-  set total(value: number) {                  // общая стоимость покупок
+  set total(value: number) {                  // записывает данные в общая стоимость покупок
     this._total = value;;
   }
 
-  set items(value: string[]) {                // массив всех id товаров в заказе
+  set items(value: string[]) {                // записывает данные в массив всех id товаров в заказе
     this._items = value;    
   } 
   
-  get orderInfo() {                           // вся информация о заказе. 
-    return {
+  getOrder () {                               // возвращает всю информация о заказе. 
+    return this.order = {
       paymentType: this._paymentType,
       email: this._email,
       telephone: this._telephone,
@@ -47,6 +46,8 @@ export class OrderData implements IOrder {
       items: this._items
     }
   }
+
+
 }
 
 

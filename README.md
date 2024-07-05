@@ -174,25 +174,20 @@ export interface IEvents {
 ### Слой данных (Model)
 отвечает за хранение и обработку данных страницы.
 
-#### Класс AppData 
-служит шаблоном для классов слоя данных.
-
-Принимает в конструктор параметр `events: IEvents` - объект класса `EventEmitter` для инициации событий при изменении данных.
-
 #### Класс CardsData
 
 отвечает за хранение и логику работы данных карточек с продуктами. 
 
-Конструктор класса принимает инстант брокера событий.\
+Конструктор класса принимает `events: IEvents` - объект класса `EventEmitter` для инициации событий при изменении данных.
+
 В классе хранятся следующие поля:\
 - _cards: ICard[] -  массив карточек продуктов; 
 - _preview: ICard - карточка, выводимая в превью;
 
-
-Методы класса
+Методы, геттеры и сеттеры.
 - set cards(cards: ICard[]): void - записывает массив карточек в _cards
-- get cards(): ICard[] - возвращает массив продуктов _cards
-- setPreview(card:ICard): ICard - возвращает карточку для превью
+- get cards(): ICard[]            - возвращает массив продуктов _cards
+- setPreview(card:ICard): ICard   - возвращает карточку для превью
 
 #### Класс BasketData
 Класс отвечает за хранение и логику товаров, добавленных покупателем в корзину
@@ -204,31 +199,32 @@ total: number - общая стоимость товаров, добавленн
 
 Методы, геттеры и сеттеры:
 
-
-- isInBasket(card: ICard): boolean - проверяет, есть ли карточка в корзине 
-- addToBasket(card: ICard): IBasketData - добавляет карточку в корзину
+- isInBasket(card: ICard): boolean          - проверяет, есть ли карточка в корзине 
+- addToBasket(card: ICard): IBasketData     - добавляет карточку в корзину
 - removeFromBasket(card:ICard): IBasketData - удаляет карточку из корзины
-- clearBasket(): IBasketData - очищает корзину
-- getGoodsNumber(): number - получает количество товаров в корзине 
+- clearBasket(): IBasketData                - очищает корзину
+- getGoodsNumber(): number                  - получает количество товаров в корзине 
 
 #### Класс OrderData
+
 отвечает за хранение и логику работы данных пользователя при оформлении заказа.\
+
 В классе хранятся следующие данные:\
-- _paymentType: PaymentMethod - выбранный тип оплаты заказа;
-- _address: string - адрес доставки заказа;
-- _telephone: string - номер телефона заказчика;
-- _email: string - адрес электронной почты заказчика;
-- _total: number - общая стоимость заказа;
-- _items: string[] - перечень заказанных продуктов;
+- _paymentType: PaymentMethod   - выбранный тип оплаты заказа;
+- _address: string              - адрес доставки заказа;
+- _telephone: string            - номер телефона заказчика;
+- _email: string                - адрес электронной почты заказчика;
+- _total: number                - общая стоимость заказа;
+- _items: string[]              - перечень заказанных продуктов;
 
 а также методы: 
-- getOrderInfo (): IOrder - возвращение всей информации о заказе;
-- set paymentType(type: PaymentMethod) - запись способа оплаты
-- set email(value: string): void - запись email покупателя
-- set phone(value: string): void - запись номера телефона покупателя
-- set address(value: string): void - запись адреса покупателя
-- set total(value: number): void - запись общей суммы покупок
-- set items(value: string[]) - запись id товаров заказа
+- getOrderInfo (): IOrder               - возвращение всей информации о заказе;
+- set paymentType(type: PaymentMethod)  - запись способа оплаты
+- set email(value: string): void        - запись email покупателя
+- set phone(value: string): void        - запись номера телефона покупателя
+- set address(value: string): void      - запись адреса покупателя
+- set total(value: number): void        - запись общей суммы покупок
+- set items(value: string[])            - запись id товаров заказа
 
 #### Класс OrderDataBuilder
 Позволяет выполнять формирование экзмепляра класса `OrderData` поэтапно (добавление товаров, выбор способа покупки и указание класса доставки, указание е-мейл и телефона). 
@@ -246,26 +242,15 @@ total: number - общая стоимость товаров, добавленн
 - set contactsInfo: TOrderContacts - запись информации с формы контактной информации (3 этап)
 - getOrderData(): IOrder - возвращение готового результата.
 
-
-
-#### Класс SuccessData
-Класс отвечает за данные, получаемые с сервера после успешного оформления заказа
-
-Конструктор класса принимает следующие параметры: параметры класса `AppData`.
-
-В классе хранятся следующие поля:
-- protected _orderSuccess: TSuccessData - данные об успешном заказе, поступающие с сервера.
-
-Методы, геттеры и сеттеры:
-- set orderSuccess (value: TSuccessData): void - запись данных оформленного заказа, поступающие с сервера.
-
-
 ### Слой отображения на сайте (View)
 
 #### Класс View
-Абстрактный класс View служит шаблоном для классов слоя представления
+Класс View служит шаблоном для всех классов слоя представления. Внутри него будет выводиться контент, созданный дополнительно. 
 
-Принимает в конструктор параметры `container: HTMLElement` и `evenits:IEvents`
+Принимает в конструктор параметры: 
+- `container: HTMLElement`        - контейнер, в котором будут рендериться элементы разметки, создаваемые в дочерних классах. 
+- `events:IEvents`                - событие из брокера событий
+
 
 В классе хранятся следующие поля:
 
@@ -279,7 +264,7 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 ##### Класс ViewPage
 Расширяет класс `View`, служит шаблоном для представления страницы.
 
-Принимает в конструктор параметры `container: HTMLElement` и `evenits:IEvents.
+Принимает в конструктор параметры `container: HTMLElement` и `events:IEvents`.
 
 В классе хранятся следующие поля:
 
@@ -290,7 +275,7 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 
 ##### Класс ViewCard
 Расширяет класс `View`, служит шаблоном для всех карточек слоя представления.
-Принимает в конструктор параметры родителя `container: HTMLElement` и `evenits:IEvents`.
+Принимает в конструктор параметры родителя `container: HTMLElement` и `events:IEvents`.
 
 В классе содержатся следующие поля:
 -  protected _id: string;                     - уникальный id карточки для ее идентификации 
@@ -331,12 +316,26 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 - protected _description: HTMLParagraphElement;       - DOM элемент (р) описания товара
 - protected buttonBuy: HTMLButtonElement;             - DOM элемент кнопки "добавить в корзину" 
 
-
 Методы, геттеры и сеттеры:
 
   - set description - устанавливает текст описания товара;
   - get description - возвращает текст описания товара;
   - setButtonBuy(value: string) - устанавливает текст кнопки
+
+###### Класс ViewCardBasket
+Расширяет класс `ViewCard`, служит шаблоном для представления карточки корзине.
+
+Принимает в конструктор параметры родителя `container: HTMLElement` и `events:IEvents`.
+
+В классе содержатся следующие поля:
+- protected _index: HTMLSpanElement;          - DOM элемент (спан) порядкового номера товара в корзине
+- protected buttonDelete: HTMLButtonElement;  - DOM элемент кнопки удаления товара из корзины
+
+Методы, геттеры и сеттеры:
+
+  - set index(value: number) - устанавливает значение порядкового номера товара в корзине;
+  - get index -  возвращает значение порядкового номера товара в корзине;
+  - setButtonDelete(value: string) - устанавливает текст кнопки
 
 ##### Класс ViewForm
 Расширяет класс `View`, служит шаблоном для всех форм слоя представления.
@@ -345,29 +344,29 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 
 В классе содержатся следующие поля:
 
-- protected container: HTMLFormElement; - DOM элемент формы
-- protected inputs: HTMLInputElement[]; - все поля ввода формы
-- protected submitButton: HTMLButtonElement; - кнопка сабмита формы
-- protected errorSpan: HTMLElement; - спан с текстом ошибки
+- protected container: HTMLFormElement;         - DOM элемент формы
+- protected inputs: HTMLInputElement[];         - все поля ввода формы
+- protected submitButton: HTMLButtonElement;    - кнопка сабмита формы
+- protected errorSpan: HTMLElement;             - спан с текстом ошибки
 
 Методы, геттеры и сеттеры:
-- changeInput(inputName: string, inputValue: string) - функция изменения данных ввода с эмитом брокера события input:change
-- clear() - функция очистки формы
-- render(data: Partial<TViewForm> & TViewForm ) - рендер формы в разметку
-- set valid - активация/блокировка кнопки сабмита при валидности/невалидности кнопки 
-- get valid - проверка валидности формы (валидна/невалидна)
-- set errorMessage(value: string[]) - установка сообщения об ошибке
+- changeInput(inputName: string, inputValue: string)  - функция изменения данных ввода с эмитом брокера события input:change
+- clear()                                             - функция очистки формы
+- render(data: Partial<TViewForm> & TViewForm )       - рендер формы в разметку
+- set valid                                           - активация/блокировка кнопки сабмита при валидности/невалидности кнопки 
+- get valid                                           - проверка валидности формы (валидна/невалидна)
+- set errorMessage(value: string[])                   - установка сообщения об ошибке
 
 ###### Класс ViewFormOrder
 
 Расширяет класс `ViewForm`, определяет форму ввода информации о заказе.
-Принимает в конструктор параметры родителя `container: HTMLElement` и `evenits:IEvents`.
+Принимает в конструктор параметры родителя `container: HTMLElement` и `events:IEvents`.
 
 В классе содержатся следующие поля:
-- protected buttonsContainer: HTMLElement; - DOM-элемент контейнера с кнопками
-- protected buttonOnline: HTMLButtonElement; - DOM-элемент кнопки оплаты онлайн   
-- protected buttonOnDelivery: HTMLButtonElement; - DOM-элемент кнопки оплаты по получении
-- protected addressInput: HTMLInputElement; - DOM-элемент поля ввода адреса
+- protected buttonsContainer: HTMLElement;        - DOM-элемент контейнера с кнопками
+- protected buttonOnline: HTMLButtonElement;      - DOM-элемент кнопки оплаты онлайн   
+- protected buttonOnDelivery: HTMLButtonElement;  - DOM-элемент кнопки оплаты по получении
+- protected addressInput: HTMLInputElement;       - DOM-элемент поля ввода адреса
 
 Методы, геттеры и сеттеры:
 - protected getButtonActive(): HTMLButtonElement | null - возвращает кнопку, которая активна
@@ -377,26 +376,24 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 ###### Класс ViewFormContacts
 
 Расширяет класс `ViewForm`, определяет форму ввода контактных данных заказчика.
-Принимает в конструктор параметры родителя `container: HTMLElement` и `evenits:IEvents`.
+Принимает в конструктор параметры родителя `container: HTMLElement` и `events:IEvents`.
 
 В классе содержатся следующие поля:
 - protected emailInput: HTMLInputElement;
 - protected telephoneInput: HTMLInputElement;
 
 Методы, геттеры и сеттеры:
-- get email() - устанавливает эмейл из данных, введенных в поле ввода эмейла
-- get telephone() - устанавливает номе телефона из данных, введенных в поле ввода номера телефона
+- get email()           - устанавливает эмейл из данных, введенных в поле ввода эмейла
+- get telephone()       - устанавливает номе телефона из данных, введенных в поле ввода номера телефона
 
-
-
-#### Класс ModalView 
+<!-- #### Класс ModalView 
 Расширяет класс `View`, отвечает за работу универсального модального окна, внутри которого будет выводиться контент, созданный дополнительно. 
 Конструктор: constructor (container: HTMLElement, content: HTMLElement, _events:IEvent) - принимает в качестве параметров контейнер из разметки, элемент разметки, который будет составлять содержание (контент) модельного окна и событие брокера
 
 Поля класса: 
 - поля класса `View`
-- _content: HTMLElement - содержание модального окна;
-- closeButton: HTMLButtonElement - кнопка закрытия модального окна;
+- _content: HTMLElement           - содержание модального окна;
+- closeButton: HTMLButtonElement  - кнопка закрытия модального окна;
 - submitButton: HTMLButtonElement - кнопка сабмита модального окна;
 
 Методы класса:
@@ -431,11 +428,13 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 - set valid(value: boolean):void - запись для блокировки (true) / разблокировки (false) кнопки submit
 - set errorMessage(value: string) - установка текста ошибок
 - clear():void - очистка формы
-- render(data: ): HTMLElement - возвращает HTMLElement формы заказа, заполненной контентом
+- render(data: ): HTMLElement - возвращает HTMLElement формы заказа, заполненной контентом -->
 
 ### Слой коммуникации
 
 #### Класс AppApi
+
+расширяет класс `Api` и 
 
 ## Взаимодействие компонентов 
 Код, описывающий взаимодействие компонентов, находится в файле `index.ts`, который выполняет роль презентера.
@@ -448,8 +447,6 @@ render(data?: Partial<T>): HTMLElement - возвращает отрисован
 - `basket:changed` - изменение корзины с товарами;
 - `order:changed` - изменение данных заказа;
 - `order:succeeded` - заказ выполнен;
-
-
 
 
 *События взаимодействия пользователя с интерфейсом*

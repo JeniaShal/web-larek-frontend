@@ -9,7 +9,6 @@ export class BasketData implements IBasketData{
   
   constructor (events: IEvents) {
     this.events = events;
-
   }
 
   get goods() {
@@ -23,22 +22,22 @@ export class BasketData implements IBasketData{
   addToBasket(card: ICard) {                                                   //добавить в корзину
     this._goods.push(card)
     this.total += card.price
-    this.events.emit('basket:changed')
+    this.events.emit('basketData:changed')
   }
 
   removeFromBasket(card:ICard) {                                               //удалить из корзины
     this._goods.filter((good)=> {good.id !== card.id})
     this.total -=card.price
-    this.events.emit('basket:changed')
+    this.events.emit('basketData:changed')
   }
 
   clearBasket() {                                                              //очистить корзину
     this._goods = [];
     this.total = 0;
-    this.events.emit('basket:changed');
+    this.events.emit('basketData:changed');
   }
 
-  getGoodsNumber(): number {                      // получить общее количество добавленных товаров в корзину
+  getGoodsNumber(): number {                                                    // получить общее количество добавленных товаров в корзину
     return this._goods.length
   }
 
