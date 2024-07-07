@@ -19,7 +19,6 @@ export interface IOrder {           //данные заказа
 
 export interface ICardsData {
  _cards: ICard[],
- _preview: ICard | null,
 }
 
 export interface IOrderData extends IOrder {
@@ -48,8 +47,9 @@ export interface IBasketData {
   addToBasket(card: ICard): void;
   removeFromBasket(card: ICard): void;
   clearBasket(): void;
-  getGoodsNumber(): number
-
+  getGoodsNumber(): number;
+  getTotal(): number;
+  getIdsOfGoods(): string[];
 }
 
 export type TPaymentMethod = 'cash' | 'card';
@@ -114,7 +114,7 @@ export interface IViewCardBasket {
 
 export interface IViewForm {
   valid: boolean;
-  errorMessage: string[];
+  errorMessage: string;
   clear(): void;
 }
 
