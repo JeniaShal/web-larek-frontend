@@ -1,4 +1,4 @@
-import { IViewForm, TViewForm } from '../../types';
+import { IViewForm, TViewForm } from '../../types/index';
 import { View } from '../view/View';
 import { ensureAllElements, ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/events';
@@ -12,21 +12,11 @@ export class ViewForm<T> extends View <TViewForm> implements IViewForm {
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events);
     this.inputs = ensureAllElements<HTMLInputElement>('.form__input', container); //находит все элементы с классом '.form__input' в DOM элементе формы
-    this.submitButton = ensureElement<HTMLButtonElement>('.button', container);   //находит элемент с классом '.button' в DOM элементе формы
+    this.submitButton = ensureElement<HTMLButtonElement>('.button[type=submit]', container);   //находит элемент с классом '.button' в DOM элементе формы
     this.errorSpan = ensureElement<HTMLSpanElement>('.form__errors', container);      //находит элемент с классом '.form__errors' в DOM элементе формы
      
-
-    this.container.addEventListener('input', (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      const inputName = target.name as keyof TViewForm;
-      const inputValue = target.value;
-      this.changeInput (inputName, inputValue);
-  });
-
-    this.container.addEventListener('submit', (event: Event) => {                 //слушатель события на сабмит формы с эмитом брокера события form:submit
-      event.preventDefault;
+    this.submitButton.addEventListener('click', () => {                 //слушатель события на сабмит формы с эмитом брокера события form:submit
       this.events.emit(`${this.container.name}:submit`);
-
     } )
   
     this.inputs.forEach(input => {
@@ -35,19 +25,14 @@ export class ViewForm<T> extends View <TViewForm> implements IViewForm {
     });
   }
 
-  changeInput(inputName: string, inputValue: string) {                           //функция изменения данных ввода с эмитом брокера события input:change
-    this.events.emit(`${this.container.name}.${String(inputName)}:change`, {
-      inputName,
-      inputValue
-    });
-  } 
-
-  get valid(): boolean {                                                           //проверка валидности формы (валидна/невалидна)
-    return this.inputs.every((input) => {input.value.length === 0});
+  set valid(state: boolean) {      
+    this.setDisabled(this.submitButton, !state);                                                      //активация/блокировка кнопки сабмита при валидности/невалидности кнопки 
+    
   }
 
-  set valid(value: boolean) {                                                      //активация/блокировка кнопки сабмита при валидности/невалидности кнопки 
-    this.submitButton.disabled = !value;
+  get valid(): boolean {    
+    const check = this.inputs.every((input) => {return input.value.length !== 0})                                                        //проверка валидности формы (валидна/невалидна)
+    return check
   }
 
   set errorMessage(value: string) {                                             // установка сообщения об ошибке
@@ -58,7 +43,7 @@ export class ViewForm<T> extends View <TViewForm> implements IViewForm {
     this.container.reset
   }
 
-  render(data: Partial<TViewForm> & TViewForm ) {                                 // рендер формы
+  render(data: Partial<T> & TViewForm ) {                                 // рендер формы
     const {valid, errorMessage, ...inputs} = data;
     super.render({valid, errorMessage});
     Object.assign(this, inputs);

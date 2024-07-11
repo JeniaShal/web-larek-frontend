@@ -1,4 +1,4 @@
-import { IOrder, TPaymentMethod, TOrderInfo} from '../../types/index'
+import { IOrder, TPaymentMethod} from '../../types/index'
 import { IEvents } from '../base/events';
 
 
@@ -13,6 +13,10 @@ export class OrderData implements IOrder {
 
   set paymentType(type: TPaymentMethod) {      //записывает данные в метод оплаты
     this._paymentType = type;
+  }
+  
+  get paymentType() {
+    return this._paymentType
   }
   
   set email(value: string) {                  //записывает данные в email покупателя

@@ -2,6 +2,7 @@ import { ViewForm } from "./ViewForm";
 import { IViewFormOrder, TPaymentMethod, TViewForm, TViewFormOrder } from "../../types";
 import { IEvents } from "../base/events";
 import { ensureElement } from "../../utils/utils";
+// import { isEmpty } from "../../utils/utils";
 
 
 export class ViewFormOrder extends ViewForm<TViewFormOrder> implements IViewFormOrder{                                         // форма заказа с способом оплаты и адресом доставки 
@@ -16,18 +17,26 @@ export class ViewFormOrder extends ViewForm<TViewFormOrder> implements IViewForm
     this.buttonOnline = ensureElement<HTMLButtonElement>('.button[name=card]', container);
     this.buttonOnDelivery = ensureElement<HTMLButtonElement>('.button[name=cash]', container);
     this.addressInput = ensureElement<HTMLInputElement>('.form__input[name=address]', container);
-
-    this.buttonsContainer.addEventListener('click', (event) => {                                              // переключает кнопку выбора оплаты метода платежа
-      if((event.target === this.buttonOnline) || (event.target === this.buttonOnDelivery)) {
-        const buttonActive = event.target as HTMLButtonElement;
-        this.resetButtons();
-        this.toggleClass(buttonActive, 'button_alt-active');
-        this.events.emit('order:valid')
-      }
+   
+    this.buttonOnDelivery.addEventListener('click', () => {
+      this.toggleClass(this.buttonOnDelivery,'button_alt-active', true) 
+      this.toggleClass(this.buttonOnline, 'button_alt-active', false)
+      this.events.emit('payment:input')
     })
-  }
 
-  protected getButtonActive(): HTMLButtonElement | null {                                                        // возвращает кнопку, которая активна
+    this.buttonOnline.addEventListener('click', () => {
+      this.toggleClass(this.buttonOnline,'button_alt-active', true) 
+      this.toggleClass(this.buttonOnDelivery, 'button_alt-active', false)
+      this.events.emit('payment:input')
+    })
+
+    this.addressInput.addEventListener('input', () => {
+      this.events.emit('address:input')
+    } )
+    }
+
+
+  getButtonActive(): HTMLButtonElement | null {                                                        // возвращает кнопку, которая активна
     if(this.buttonOnline.classList.contains('button_alt-active')) {
       return this.buttonOnline
     } 
@@ -39,14 +48,24 @@ export class ViewFormOrder extends ViewForm<TViewFormOrder> implements IViewForm
     return null;
   }
 
-  protected resetButtons(): void {                                                                               //сбрасывает активный статус кнопки                                                   
+  resetButtons(): void {                                                                               //сбрасывает активный статус кнопки                                                   
     this.toggleClass(this.buttonOnline, '.button_alt-active', false);
     this.toggleClass(this.buttonOnDelivery, '.button_alt-active', false);
   }
 
-  set paymentMethod (value: TPaymentMethod) {                                                                   // устанавливает метод платежа                                     
-    this.buttonOnDelivery.classList.toggle('.button_alt-active', value === 'cash')
-    this.buttonOnline.classList.toggle('.button_alt-active', value === 'card')
+  set payment (value: TPaymentMethod | null) {                                                                   // устанавливает метод платежа                                     
+    if (this.buttonOnDelivery.classList.toggle('.button_alt-active', true)) {
+      value === 'cash'
+    }
+    else if (this.buttonOnline.classList.toggle('.button_alt-active', true)) {
+      value === 'online'
+    }
+    value === null
+  }
+
+  get payment() {// возвращает имя активной кнопки
+    const buttonActive = this.getButtonActive();
+    return buttonActive ? buttonActive.name as TPaymentMethod : null
   }
 
   get address() {                                                                                               // записывает адрес
@@ -54,16 +73,20 @@ export class ViewFormOrder extends ViewForm<TViewFormOrder> implements IViewForm
   }
 
   get valid() {                                                                                                  //возвращает "валидность"
-    if(!(super.valid) && Boolean(this.paymentMethod)) {
+    if (Boolean(this.addressInput.value) === true && (Boolean(this.payment) === true)) {
+      this.errorMessage = '';
+      return true
+    }
+
+    else if (Boolean(this.addressInput.value) === false && (Boolean(this.payment) === true)) {
+      this.errorMessage = 'Заполните поле адреса'
+      return false
+    }    
+    else if (Boolean(this.addressInput.value) === true && (Boolean(this.payment) === false)) {
+      this.errorMessage = 'Выберите метод платежа'
       return false
     }
-    else if ((super.valid) && Boolean(this.paymentMethod)) {
-      return true
-    }
-    else if ((super.valid) && !Boolean(this.paymentMethod)) {
-      return true
-    }
-    return true
+    return false
   }
 
   set valid(value: boolean) {                                                                                     //устанавливает "валидность"

@@ -5,7 +5,7 @@ import { ensureElement } from "../../utils/utils";
 import { categories } from "../../utils/constants";
 
 
-export class ViewCard<T> extends View<T> implements IViewCard {
+export abstract class ViewCard<T> extends View<T> implements IViewCard {
   protected _id: string;
   protected _title: HTMLHeadingElement;
   protected _price: HTMLSpanElement;
@@ -75,6 +75,18 @@ set image(src: string) {
     }
   }
 
+  set category(value: string) {                             // запись данных категории товара (текстКонтент и доп класс)
+    this.addClassToCategory(value);
+    if (this._category) {
+    this.setText(this._category, value);
+    }
+  }
 
+  get category() {      
+    if (this._category) {                                    // получение категории товара (текстКонтента или ничего, если категория нулевая или неопределенная)
+    return this._category.textContent ?? '';
+    }
+    return ''
+  }
 }
 

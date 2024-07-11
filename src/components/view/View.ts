@@ -3,21 +3,13 @@ import { IEvents } from "../base/events";
 export class View<T> {
   protected container: HTMLElement;                                              // DOM элемент компонента
   protected events: IEvents;                                                      // объект класса `EventEmitter` для инициации событий при изменении данных
-  private _valid: any;
-
+  
 
   constructor(container: HTMLElement, events: IEvents) {
     this.container = container;                                                   // DOM элемент компонента
     this.events = events;                                                         // объект класса `EventEmitter` для инициации событий при изменении данных
   }
-
-  public get valid(): any {
-    return this._valid;
-}
-  public set valid(value: any) {
-    this._valid = value;
-}
-                                                                                 
+                                                                                
   toggleClass(element: HTMLElement, className: string, method?: boolean) {        // Переключить класс
     element.classList.toggle(className, method);
   }
